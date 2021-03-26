@@ -1,0 +1,103 @@
+<?php $this->view('simple_layout/header'); ?>
+<?php $this->view('simple_layout/leftSidebar'); ?>
+<section id="content">
+	<div class="page page-forms-validate">
+		<div class="pageheader">
+			<div class="page-bar">
+				<ul class="page-breadcrumb">
+					<li><a href="<?php echo site_url();?>"><i class="fa fa-home"></i> <?php echo $this->lang->line ( "dashbord" );?></a></li>
+					<li><a href="<?php echo site_url($this->uri->segment("1"));?>"></i> <?php echo $this->lang->line ( "holiday" );?></a></li>
+					<li><a></i><?php echo $this->lang->line ( "edit_meal" );?> </a></li>
+				</ul>
+			</div>
+		</div>
+		<!-- row -->
+		<div class="row">
+			<!-- col -->
+			<div class="col-md-12">
+				<!-- tile -->
+				<a href="<?php echo site_url().$this->uri->segment ( '1' ) ;?>/add_meal" class="btn btn-greensea btn-ef btn-ef-7 btn-ef-7h mb-10 pull-right mr-10"><i class="fa fa-plus"></i> <?php echo $this->lang->line ( "add_meal" );?></a>
+				<a href="<?php echo site_url().$this->uri->segment ( '1' ) ;?>/meal" class="btn btn-greensea btn-ef btn-ef-7 btn-ef-7h mb-10 pull-right mr-10"><i class="fa fa-list"></i> <?php echo $this->lang->line ( "meal_list" );?></a>
+				<div class="clearfix"></div>
+				<section class="tile bp_shadow">
+					<!-- tile header -->
+					<div class="tile-header dvd dvd-btm">
+						<h1 class="custom-font">
+							 <strong> <?php echo $this->lang->line ( "edit_meal" );?> </strong>
+						</h1>
+					</div>
+					<!-- /tile header -->
+					<form class="form-horizontal" role="form" action="" method="post" id="add_meal" enctype="multipart/form-data">
+						<input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<div class="panel-title hidden-xs"><?php echo $this->lang->line ( "meal_detail" );?> </div>
+							</div>
+							<div class="panel-body pn">
+								<br>
+								<table class="table table-bordered bp_table_td">
+									<tbody>
+										<tr>
+											<td class="warning"><?php echo $this->lang->line ( "type" );?></td>
+											<td>
+											   <select class="form-control" name="type">
+											      <option value="MAP" <?php if($result->holmeal_meal_type == "MAP"){echo "selected";}?>>MAP</option>
+											       <option value="CP" <?php if($result->holmeal_meal_type == "CP"){echo "selected";}?>>CP</option>
+											        <option value="AP" <?php if($result->holmeal_meal_type == "AP"){echo "selected";}?>>AP</option>
+											         <option value="EP" <?php if($result->holmeal_meal_type == "EP"){echo "selected";}?>>EP</option>
+											  </select>
+											</td>
+											<td class="warning"><?php echo $this->lang->line ( "name" );?></td>
+											<td><input type="text" name="name" class="form-control" placeholder="Enter Meal Name" value="<?php echo $result->holmeal_meal_name;?>"></td>
+										</tr>
+										<tr>
+											<td class="warning"><?php echo $this->lang->line ( "description" );?></td>
+											<td><textarea class="form-control" name="desc"><?php echo $result->holmeal_meal_description;?></textarea></td>
+											<td class="warning"><?php echo $this->lang->line ( "enter_icon_code" );?></td>
+											<td>
+											    <input type="text" name="icon" class="form-control" placeholder="Enter icon code" value="<?php echo $result->holmeal_icon;?>">
+											    <a href="<?php echo site_url();?>online/font_awesome" class="" target="_blank"><?php echo $this->lang->line ( "click_for_icon_list" );?></a>
+											</td>
+										</tr>
+										<tr>
+											<td class="warning"><?php echo $this->lang->line ( "language" );?></td>
+											<td><select class="form-control" name="language">
+										<?php $all_language=$this->all_language;
+										?>
+										<?php foreach($all_language as $all_languages){ ?> 
+										<option value="<?php echo $all_languages;?>" <?php if($result->holmeal_language==$all_languages){ echo "selected"; }?>><?php echo $all_languages;?></option>
+										<?php }?>
+										</select></td>
+										</tr>
+										
+									</tbody>
+								</table>
+
+							</div>
+
+
+							<div class="panel-body pn">
+
+								<div class="row box-footer">
+									<div class="text-center">
+
+										<button type="submit" class="btn btn-primary"><?php echo $this->lang->line ( "update" );?></button>
+
+									</div>
+								</div>
+								<br>
+							</div>
+
+						</div>
+					</form>
+				</section>
+				<!-- /tile -->
+			</div>
+			<!-- /col -->
+		</div>
+		<!-- /row -->
+	</div>
+</section>
+<!--/ CONTENT -->
+<?php $this->load->view("simple_layout/footer");?>
+<?php $this->load->view($this->uri->segment("1")."/js");?>

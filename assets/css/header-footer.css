@@ -1,0 +1,187 @@
+.header{
+	border-top: 2px solid var(--main-color);
+    background: #fff;
+	/* border-bottom: 1px solid var(--main-color); */
+    padding: 6px 0px;
+}
+.main-navbar.bg-light{
+	background: transparent !important;
+}
+.main-navbar .navbar-nav > li > .nav-link{
+    color: #333;
+    padding: 1rem 1.1rem;
+    font-weight: 500;
+}
+.main-navbar .navbar-nav > li > .nav-link:focus{
+    color: var(--main-color);
+}
+.main-navbar .navbar-nav > li > .nav-link > i{
+	font-size: 1.2rem;
+}
+.main-navbar .navbar-nav > li > .nav-link.active, .main-navbar .navbar-nav > li > .nav-link:hover{
+	color: var(--main-color);
+}
+.header-right-wrap li a i{
+	position: absolute;
+    left: 0;
+    top: 50%;
+    font-size: 1rem;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.header-right-wrap li a .icofont-ui-call {
+    padding-left: 4px;
+}
+.header-right-wrap > ul > li > a {
+    position: relative;
+    color: #333;
+    display: block;
+    padding-left: 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.header-right-wrap ul > li > .dropdown-item {
+    padding: .3rem 0.7rem;
+    font-size: 0.9rem;
+}
+.header-right-wrap .dropdown-menu{
+	left: auto;
+	padding: 0;
+	right: 0px;
+	border-radius: inherit;
+}
+.header-right-wrap .dropdown-menu > li:not(:last-child) > a{
+	border-bottom: 1px dashed rgba(6, 144, 69, 0.23);
+
+}
+
+/* Footer Style Start From Here */
+.site-footer{
+    background: url('../images/footer-bg.jpg') no-repeat bottom left;
+    background-size: cover;
+    background-attachment: fixed;
+    position: relative;
+    color: #fff;
+}
+.site-footer a{
+    color: #fff;
+}
+.foo-link li a, .foo-address li{
+    position: relative;
+    display: block;
+}
+.foo-address li i {
+    position: absolute;
+    left: 0px;
+    top: 3px;
+}
+.foo-link:not(.foo-address):not(.social-media) li a:before{
+    content: '\eaa0';
+    position: absolute;
+    left: 0px;
+    font-family: IcoFont;
+}
+.foo-link:not(.foo-address):not(.social-media) li a{
+    padding-left: 1.1rem;
+}
+.foo-link li{
+    margin-bottom:0.6rem;
+}
+.foo-address li{
+    padding-left: 1.2rem;
+}
+.site-footer:after{
+    
+}
+.foot-com {
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+.foot-com h3{
+    font-weight: 400;
+    font-size: 1.2rem;
+    position: relative;
+    padding-bottom: 0.8rem;
+    margin-bottom: 1.1rem;
+}
+.foot-com h3:after{
+    content: '';
+    position: absolute;
+    left: 0px;
+    height: 4px;
+    background: var(--main-color);
+    width: 15px;
+    bottom: 0;
+}
+.copyright{
+    font-weight: 300;
+    font-size: 0.8rem;
+}
+.bottom-footer {
+    border-top: 1px dashed rgba(255, 255, 255, 0.12);
+    padding-top: 10px;
+}
+.social-media ul > li > a {
+    color: #fff;
+    border: 2px solid #fff;
+    width: 35px;
+    height: 35px;
+    display: block;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 31px;
+}
+.social-media ul > li > a:hover{
+    -webkit-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+}
+.social-media ul > li.fb > a{
+    background: #3b579d;
+    border-color: #3b579d;
+}
+.social-media ul > li.tw > a{
+    background: #1da1f2;
+    border-color: #1da1f2;
+}
+.social-media ul > li.ldn > a{
+    background: #0d77b7;
+    border-color: #0d77b7;
+}
+.social-media ul > li.insta > a{
+    background: #8b46b8;
+    border-color: #8b46b8;
+}
+.social-media ul > li.gplus > a{
+    background: #ff4040;
+    border-color: #ff4040;
+}
+.social-media ul > li.utube > a{
+    background:  #f00;
+    border-color:  #f00 ;
+   
+}
+.success-smg-nlt{
+    color: #008000;
+    text-align: center;
+    background: #fff;
+    display: inline-block;
+    font-size: 1.1rem;
+    padding: 5px 8px;
+    margin-bottom: 6px;
+    position: relative;
+    font-weight: 400;
+    margin-left: 28%;
+}
+.success-smg-nlt:before {
+    content: '';
+    position: absolute;
+    border: 10px solid transparent;
+    border-bottom-color: #fff;
+    top: -20px;
+    left: calc(50% - 10px);
+}
+/* Footer Style end From Here */

@@ -1,0 +1,457 @@
+.rio-promos {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.mk-farecalendar.active {
+    background: white;
+}
+.mk-farecalendar a {
+    text-decoration: none !important;
+    color: inherit;
+    position: relative;
+    display: block;
+}
+.mk-farecalendar a .fc-airline{
+    text-align: left;
+}
+.mk-farecalendar a:focus {
+    outline:none;
+}
+.mk-farecalendar .fc-airline span {
+    font-size: 11px;
+    color: #000;
+    margin-left: 5px;
+    display: none;
+}
+.mk-farecalendar .fc-price {
+    margin-top: 3px;
+}
+.mk-farecalendar .fc-price small {
+    float: none;
+    font-size: 10px;
+    margin-top: 4px;
+    position: relative;
+    right: 0;
+    top: 0;
+    display: block;
+}
+.mk-farecalendar .fc-price span {
+    font-size: 14px;
+    font-weight: bold;
+    color: #069045;
+    float: none;
+    display: block;
+    padding: 6px 0px 0px 0px;
+    position: absolute;
+    top: -4px;
+    right: 0;
+}
+.slick-slide {
+  margin: 0 0px;
+}
+.slick-list {
+  margin: 0px -5px 0px -5px;
+}
+.mk-farecalendar:hover {
+    background:rgb(249, 249, 249);
+}
+button.slick-next, button.slick-next:focus {
+  position: absolute;
+  top: 19%;
+  right: 0px;
+  width: 32px;
+   height: 54px;
+    background-size: 95px;
+   background: rgba(0, 0, 0, 0.26);
+   color:#333;
+}
+ button.slick-next:hover{
+	background: #069045;
+	color:white; 
+ }
+button.slick-prev, button.slick-prev:focus{
+    position: absolute;
+    top: 19%;
+    left: 0px;
+    background: rgba(0, 0, 0, 0.26);
+    z-index: 1;
+    width: 32px;
+    height: 54px;
+	color:#333;
+    background-size: 52px 52px;
+    background-position-x: right;
+    background-repeat: no-repeat;
+}
+button.slick-prev:hover {
+    background: #069045;
+    color: white;
+}
+.slick-prev:before, .slick-next:before {
+  font-size: 70px;
+  color: #EA8496;
+  line-height: inherit;
+  font-weight: bold;
+}
+.rio-promos img {
+  height: 20%;
+}
+
+/* Slick Slider Styles -- Provided by https://kenwheeler.github.io/slick/ */
+/* Slider */
+.slick-slider
+{
+    position: relative;
+
+    display: block;
+
+    -moz-box-sizing: border-box;
+         box-sizing: border-box;
+
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
+    -ms-touch-action: pan-y;
+        touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.slick-list
+{
+    position: relative;
+
+    display: block;
+    overflow: hidden;
+
+    margin: 0;
+    padding: 0;
+}
+.slick-list:focus
+{
+    outline: none;
+}
+.slick-list.dragging
+{
+    cursor: pointer;
+    cursor: hand;
+}
+
+.slick-slider .slick-track,
+.slick-slider .slick-list
+{
+    -webkit-transform: translate3d(0, 0, 0);
+       -moz-transform: translate3d(0, 0, 0);
+        -ms-transform: translate3d(0, 0, 0);
+         -o-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+}
+
+.slick-track
+{
+    position: relative;
+    top: 0;
+    left: 0;
+
+    display: block;
+}
+.slick-track:before,
+.slick-track:after
+{
+    display: table;
+
+    content: '';
+}
+.slick-track:after
+{
+    clear: both;
+}
+.slick-loading .slick-track
+{
+    visibility: hidden;
+}
+
+.slick-slide
+{
+    display: none;
+    float: left;
+
+    height: 100%;
+    min-height: 1px;
+}
+[dir='rtl'] .slick-slide
+{
+    float: right;
+}
+.slick-slide img
+{
+    display: block;
+}
+.slick-slide.slick-loading img
+{
+    display: none;
+}
+.slick-slide.dragging img
+{
+    pointer-events: none;
+}
+.slick-initialized .slick-slide {
+    display: block;
+    background: #fff;
+    padding: 2px 20px;
+    text-align: center;
+}
+.slick-initialized .slick-slide:not(:first-child) {
+    border-right: 1px solid #eee;
+}a
+.slick-loading .slick-slide
+{
+    visibility: hidden;
+}
+.slick-vertical .slick-slide
+{
+    display: block;
+
+    height: auto;
+
+    border: 1px solid transparent;
+}
+.slick-arrow.slick-hidden {
+    display: none;
+}
+@charset 'UTF-8';
+/* Slider */
+.slick-loading .slick-list
+{
+    background: #fff url('http://maggiesadler.com/wp-content/uploads/2015/10/ajax-loader.gif') center center no-repeat;
+}
+
+/* Icons */
+@font-face
+{
+    font-family: 'slick';
+    font-weight: normal;
+    font-style: normal;
+
+    src: url('file:///C:/Users/msadler/Desktop/slick-1.5.7/slick/fonts/slick.eot');
+    src: url('file:///C:/Users/msadler/Desktop/slick-1.5.7/slick/fonts/slick.eot?#iefix') format('embedded-opentype'), url('file:///C:/Users/msadler/Desktop/slick-1.5.7/slick/fonts/slick.woff') format('woff'), url('file:///C:/Users/msadler/Desktop/slick-1.5.7/slick/fonts/slick.ttf') format('truetype'), url('file:///C:/Users/msadler/Desktop/slick-1.5.7/slick/fonts/slick.svg#slick') format('svg');
+}
+/* Arrows */
+.slick-prev,
+.slick-next
+{
+    font-size: 31px;
+    line-height: 0;
+
+    position: absolute;
+    top: 50%;
+
+    display: block;
+
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    padding: 0;
+
+    cursor: pointer;
+
+    color:black;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+.slick-prev:hover,
+.slick-prev:focus,
+.slick-next:hover,
+.slick-next:focus
+{
+    color: transparent;
+    outline: none;
+    background: transparent;
+}
+.slick-prev:hover:before,
+.slick-prev:focus:before,
+.slick-next:hover:before,
+.slick-next:focus:before
+{
+    opacity: 1;
+}
+.slick-prev.slick-disabled:before,
+.slick-next.slick-disabled:before
+{
+    opacity: .25;
+}
+
+.slick-prev:before,
+.slick-next:before
+{
+    font-family: 'slick';
+    font-size: 20px;
+    line-height: 1;
+
+    opacity: .75;
+    color: white;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.slick-prev
+{
+    left: -25px;
+}
+[dir='rtl'] .slick-prev
+{
+    right: -25px;
+    left: auto;
+}
+.slick-prev:before
+{
+    content: '';
+}
+[dir='rtl'] .slick-prev:before
+{
+    content: '';
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.slick-next
+{
+    right: -25px;
+}
+[dir='rtl'] .slick-next
+{
+    right: auto;
+    left: -25px;
+}
+.slick-next:before
+{
+    content: '';
+}
+[dir='rtl'] .slick-next:before
+{
+    content: '';
+}
+
+/* Dots */
+.slick-slider
+{
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+}
+
+.slick-dots
+{
+    position: absolute;
+    bottom: -45px;
+
+    display: block;
+
+    width: 100%;
+    padding: 0;
+
+    list-style: none;
+
+    text-align: center;
+}
+.slick-dots li
+{
+    position: relative;
+
+    display: inline-block;
+
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+    padding: 0;
+
+    cursor: pointer;
+}
+.slick-dots li button
+{
+    font-size: 0;
+    line-height: 0;
+
+    display: block;
+
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+
+    cursor: pointer;
+
+    color: transparent;
+    border: 0;
+    outline: none;
+    background: transparent;
+}
+.slick-dots li button:hover,
+.slick-dots li button:focus
+{
+    outline: none;
+}
+.slick-dots li button:hover:before,
+.slick-dots li button:focus:before
+{
+    opacity: 1;
+}
+.slick-dots li button:before
+{
+    font-family: 'slick';
+    font-size: 6px;
+    line-height: 20px;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 20px;
+    height: 20px;
+
+    content: '•';
+    text-align: center;
+
+    opacity: .25;
+    color: black;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.slick-dots li.slick-active button:before
+{
+    opacity: .75;
+    color: black;
+}
+.col-md-9.contant {
+    padding: 0px;
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+button.slick-prev i:after {
+    font-family: IcoFont!important;
+    content: "\eab5";
+    position: absolute;
+}
+button.slick-next i:after {
+    font-family: IcoFont!important;
+    content: "\eab8";
+    position: absolute;
+}
+button.slick-prev i, button.slick-next i {
+    position: relative;
+    font-style: normal;
+    font-size: 23px;
+}
+@media screen and (max-width: 400px){
+    .mk-farecalendar .fc-price span{
+        right: 35px;
+    }
+    .slick-slide{}
+        width: 100% !important;
+        max-width: 243px;
+}

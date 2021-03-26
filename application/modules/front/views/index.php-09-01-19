@@ -1,0 +1,250 @@
+<?php $this->load->view('header') ?>
+<?php $data['active_tab'] = "flight";?>
+<?php $this->load->view('search_section',$data) ?>
+
+<script> 
+	console.log(<?php echo json_encode($sliderimg); ?>);
+	console.log(<?php echo json_encode($right_text); ?>);
+	console.log(<?php echo json_encode($left_text); ?>);
+</script>
+
+
+
+  <div class="offers-list hidden">
+    <div class="container">
+     <div class="row">
+	 <?php if(isset($offerimgs) && is_array($offerimgs)) {?>
+	  <?php foreach($offerimgs as $offerimg) {?>
+        <div class="col-md-4">
+          <div class="off-col">
+            <a href="<?php echo $offerimg->hos_url; ?>">
+            <img src="<?php echo site_url(); ?>admin/assets/img/offer/main/<?php echo $offerimg->hos_image; ?>" alt="<?php echo $offerimg->hos_title; ?>">
+            </a>
+          </div>
+        </div>
+	 <?php } } ?>	
+     </div>
+    </div>
+  </div>
+
+  <div class="plans-col-wrap">
+    <div class="container">
+      <div class="top-bar text-center">
+        <h2 class="">Plans Beyond Your Flight</h2>
+        <p>Hotels, Cars, Bus and Others</p>
+      </div>
+      <div class="palns-beyond">
+        <div class="row">
+          <div class="col-md-3 col-sm-4 col-xs-6">
+            <div class="palns-be-col">
+              <span class="icon"><i class="icofont-juice"></i></span>
+              <p>Hotels</p>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-4 col-xs-6">
+            <div class="palns-be-col">
+              <span class="icon"><i class="icofont-bus-alt-1"></i></span>
+              <p>Bus</p>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-4 col-xs-6">
+            <div class="palns-be-col">
+              <span class="icon"><i class="icofont-car-alt-1"></i></span>
+              <p>Car</p>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-4 col-xs-6">
+            <div class="palns-be-col">
+              <span class="icon"><i class="icofont-credit-card"></i></span>
+              <p>Recharge</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="our-facilities">
+     <div class="container">
+       <div class="row">
+         <div class="col-md-4 col-sm-6">
+           <div class="facility-col trans">
+             <span class="ic-lg"><i class="icofont-like"></i></span>
+             <h4><i class="icofont-like"></i> Our Prices</h4>
+              <p>We are often asked why our booking offer such great value for money compared to our competitors.</p>
+           </div>
+         </div>
+         <div class="col-md-4 col-sm-6">
+           <div class="facility-col trans">
+             <span class="ic-lg"><i class="icofont-history"></i></span>
+             <h4><i class="icofont-history"></i> Convenience</h4>
+              <p>Convenient and fast search for booking. We provide Easy online payments and time flexibility.</p>
+           </div>
+         </div>
+         <div class="col-md-4 col-sm-6">
+           <div class="facility-col trans">
+             <span class="ic-lg"><i class="icofont-automation"></i></span>
+             <h4><i class="icofont-automation"></i> Responsibility</h4>
+              <p>No peak time charge with transparent pricing structure. Live display of fare meter is on the way soon.</p>
+           </div>
+         </div>
+       </div>
+     </div>
+  </div>
+	 <!-- Top Flight Routes Start From here -->
+
+	<!-- <div class="top-flight-routes">
+
+      <div class="container">
+
+      
+
+        <h3 class="heading-1 text-center mb-4">Top Destinations</h3>
+
+        <div class="row">
+
+          
+
+		<?php 
+
+            if(!empty($result)){
+
+                foreach ($result as $Key => $results) { ?>
+
+					<div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 top-flight-common">
+
+						<div class="flight-wrap">
+
+						<div class="flght-img-wrap">
+
+							<a href="javascript:void(0)"><img src="<?php echo $this->dsa_data->dsa_admin_url; ?>assets/img/holiday/main/<?php echo $results->holiday_feature_image; ?>" alt="img15"/></a>
+
+						</div>
+
+						<div class="flght-desc">
+
+							<h4><?php echo word_limiter(strip_tags($results->holiday_name), 5); ?></h4>
+
+							<span class="flght-fares">Fares from Rs.  <?php  echo $results->holiday_start_price; ?></span>
+
+							<div class="flght-bottom">
+
+							<a href="<?php echo site_url() ?>holiday/holidaydetail/<?php echo $results->holiday_slug; ?>" class="btn-flght"><i class="icofont-paper-plane"></i> Book</a>
+
+							</div>
+
+						</div>
+
+						</div>
+
+					</div>
+
+
+
+		 <?php } }?>			
+
+        </div>
+
+      </div>
+
+    </div>
+	
+	-->
+
+  
+
+<?php $this->load->view('footer') ?>
+
+<?php $this->load->view('js') ?>
+
+<script>
+$(function(){
+    $( "#bus-depart-date" ).datepicker({
+       numberOfMonths: 1,
+           dayNamesMin: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+           "minDate": 0,
+           showOn: 'both',
+           buttonText: '',
+           dateFormat: 'yy-mm-dd',
+           
+           onClose: function (selectedDate)
+             {
+               $("#bp_check_out_date").datepicker("option", "minDate", selectedDate);
+             }
+    });
+});
+
+function bus_sugges_from(inputString,id) {
+    $( ".bus_from" ).autocomplete({
+    autoFocus: true,	
+    minLength : 2,
+    source : function(request, response) {
+        $.ajax({
+            type: "POST",
+            url: "<?php echo site_url();?>bus/fetch_city_to",
+            dataType : "json",
+            cache : false,
+            data: {id: inputString,div_id:id},
+            success: 
+                function(data){
+                    var all_l=[];
+                    for(var i=0;i<data.length;i++)
+                    {
+                        var city_name=data[i].busodma_destination_name; 
+                        var code=data[i].busodma_destination_code;
+                        all_l.push({ "label": city_name, "value": city_name, "city_code":code  } );
+                    }
+                    response(all_l);
+                }	
+            });	  
+        }, 
+        select: function(event, ui) {   
+            var bp_age_div_data = "";
+            $('#source_code').val(ui.item.city_code);
+            $.ajax({
+            type: "POST",
+            url: "<?php echo site_url();?>bus/bus_destination_fetch",
+            dataType : "json",
+            cache : false,
+            data: {city_code:ui.item.city_code},
+            success: 
+                function(data){
+                  //  console.log(data.Description.bp);
+                  $('#destination').empty();    
+                  
+                        for(var i=0;i<data.length;i++)
+                        {
+                            console.log(data[i].CityId.bp);
+                            bp_age_div_data +='<option value ="'+data[i].RedBusCityCode.bp+','+data[i].CityName.bp+'">'+data[i].CityName.bp+'</optio>';
+                         }
+        
+                    $('#destination').append(bp_age_div_data);
+                }	
+            });	  
+        },
+    });    
+}
+
+$("#roomsadd").click(function(){
+	$(".hotelguestsdetails").toggle();
+});
+
+$(".searchenginehoteldone").click(function(){
+	$(".hotelguestsdetails").hide();
+});
+
+$(".pop_select").change(function(){
+  
+	var child  =	parseInt($(".infent_select").val());  
+	var infant = 	parseInt($(".child_select").val());  
+  var adult  =	parseInt($(".adult_select").val());  
+	var total=child+infant+adult;
+	 $(".guest_num").text(total);
+	
+});
+
+$(".class_selected").change(function(){	
+		$(".room_num").text($(".class_selected option:selected").text());
+})
+</script>
+

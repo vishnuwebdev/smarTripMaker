@@ -1,0 +1,16 @@
+/admin/application/config/config.php
+/admin/application/config/database.php
+/admin/application/logs/*
+/application/config/config.php
+/application/config/database.php
+/application/logs/*
+/b2b.smarttripmaker.com
+/Blog.smarttripmaker.com
+/blogs.smarttripmaker.com
+/developer.smarttripmaker.com
+/simply.smarttripmaker.com
+/smarttripmaker.com
+/smarttripmaker.in
+/story.smarttripmaker.com
+/tripstory.smarttripmaker.com
+/psi

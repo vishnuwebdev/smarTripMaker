@@ -1,0 +1,136 @@
+@media screen and (max-width: 767px){
+	.navbar-toggler {
+	    position: absolute;
+	    right: 15px;
+	    top: calc(50% - 15px);
+	    background: #009447;
+	    color: #fff;
+	    border-radius: inherit;
+	}
+	.main-navbar.bg-light{
+		border-top: 1px dashed rgba(0, 0, 0, 0.22);
+	}
+	.main-navbar .navbar-nav > li > .nav-link{
+		padding: 0.7rem 1.1rem;
+	}
+	.slider-wrap{
+		display: none;
+	}
+	.search-wrapper{
+		position: relative;
+		top: 0px;
+		margin-top: 5px;
+		background: url('../images/adventure-travel-bg.jpg') no-repeat;
+	}
+	.search-wrapper .container {
+	    max-width: 100%;
+	}
+	.facilit-col{
+		top: 0;
+	}
+	.our-facilities {
+	    padding: 15px 0px;
+	}
+	.search-tabbar{
+		background: rgba(0, 0, 0, 0.71);
+	}
+	.header-right-wrap {
+	    border-bottom: 1px dashed rgba(0, 0, 0, 0.17);
+	    padding-bottom: 0.5rem;
+	    margin-bottom: 0.3rem;
+	}
+	.pickup_fields_wrap .add_pickup_more, .pickup_fields_wrap .remove_field{
+		margin-bottom: 0.5rem;
+	}
+	.flght-side-det{
+		margin-top: 15px;
+	}
+	.fl-o-way-com{
+		padding-top: 0.5rem;
+	}
+	#sidebar-flght {
+	    position: fixed;
+	    top: 0;
+	    background: #fff;
+	    display: none;
+	    z-index: 99;
+	    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+	}
+	.sidebar-com{
+		margin-top: 0.5rem;
+	}
+	.ari-dr.fl-o-way-com{
+		text-align: left;
+	}
+	.dep-dr.fl-o-way-com{
+		text-align: right;
+	}
+	.txt-right{
+		text-align: right !important; 
+	}
+	.txt-lt{
+		text-align: left !important;
+	}
+	.flt-details-wrap .nav-tabs .nav-link{
+		font-size: 0.8rem;
+		padding: .5rem 0.5rem;
+	}
+	.thankyou-confrim .icon{
+		left: 1rem;
+		font-size: 3rem;
+		top: calc(50% - 36px);
+	}
+	.thankyou-confrim{
+		padding-left: 4.5rem;
+	}
+	.thankyou-confrim h5 {
+	    font-size: 1rem;
+	}
+	.flt-booking-top h5 {
+	    font-size: 0.8rem;
+	}
+	.htl-listing-price {
+	    padding-top: 12px;
+	}
+	.htl-listing-img {
+	    margin-bottom: 1rem;
+	}
+	.hotelBox-booking .nav.nav-tabs li a{
+		padding: .5rem 0.3rem;
+		font-size: 0.8rem;
+	}
+	.hotelBox-booking .nav.nav-tabs li a i{
+		display: none;
+	}
+	.htlcol-price {
+	    padding-top: 0.5rem;
+	}
+	.hldy-desc-wrap{
+		padding: 1rem 1rem 1rem 1rem;
+	}
+	.footer-fixed-prc{
+		position: absolute;
+	}
+	.nxt-prev-btn{
+		margin-top: 0.5rem;
+	}
+	.news-letter-wrap {
+	    padding: 15px 0px 15px 0px;
+	}
+	.newsletter-box {
+	    padding: 0px 0px 5px 0px;
+	}
+	.news-letter-wrap h2 {
+	    font-size: 21px;
+	}
+
+}
+@media screen and (max-width: 480px){
+	.social-login-wrap li{
+		display: block;
+		margin-bottom: 5px;
+	}
+	.social-login-wrap a{
+		display: block;
+	}
+}

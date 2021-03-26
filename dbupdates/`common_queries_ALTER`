@@ -1,0 +1,7 @@
+ALTER TABLE `common_queries`
+	ADD COLUMN `com_departure_date` VARCHAR(250) NOT NULL AFTER `com_name`,
+	ADD COLUMN `com_member` VARCHAR(250) NOT NULL AFTER `com_departure_date`;
+
+
+
+ALTER TABLE `flight_booking_list` ADD `fbook_baggage_weight` VARCHAR(255) NULL AFTER `fbook_customer_fare`, ADD `fbook_baggage_amount` VARCHAR(255) NULL AFTER `fbook_baggage_weight`;
