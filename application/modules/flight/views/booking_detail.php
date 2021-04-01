@@ -1,5 +1,4 @@
 <style>
-
 div.multiple_select_checkbox {
     width: 100%;
     height: 160px;
@@ -8,22 +7,18 @@ div.multiple_select_checkbox {
     border: 1px solid #CCCCCC;
 }
 </style>
+<script src="<?php echo site_url();?>assets/js/modernizr.js"></script>
+<link rel="stylesheet" href="<?php echo site_url();?>assets/css/modernizr.css" />
+<link rel="stylesheet" href="<?php echo site_url();?>assets/css/seat.css" />
 <?php 
 $this->load->view('include/head');
 $this->load->view('include/header'); 
-
 $baggageData = 0;
-
 $result = $confrimdata->Response->Results;
 $segment = $result->Segments;
 $traceID = $confrimdata->Response->TraceId;
-
-
 $old_selected_data=json_decode ($_SESSION ["flight"] [$this->input->get('seesionid')] ["Search_Result_json"]);
-
-
 $offer_fare= $result->Fare->OfferedFare;
-
 $current_currency = $result->Fare->Currency;
 $publish_fare = $result->Fare->PublishedFare;
 $dsa_data=$this->dsa_data;
@@ -31,63 +26,45 @@ $dsa_airline_code=$segment[0][0]->Airline->AirlineCode;
 $baseFare = $result->Fare->BaseFare;
 $yq_fare = $result->Fare->YQTax;
 $tax = $publish_fare - $baseFare;
-
 $bp_fare_data=bp_get_fare($offer_fare,$publish_fare,$dsa_airline_code,$dsa_data,$baseFare,$yq_fare);
 if( $current_currency == "USD" ){
 	$currency_symbol = "icofont-dollar"; $js_currency_symbol = "$";
-}
-else{
+}else{
 	$currency_symbol = " icofont-rupee"; $js_currency_symbol = "₹";
 }
-
 $dsa_fare=$bp_fare_data['dsa_fare'];
 $customer_fare=$bp_fare_data['customer_fare'];
-
 // $dsa_fare=$offer_fare;
 // $customer_fare = $publish_fare;
-
 for($k=0; $k < count($old_selected_data->Response->Results[0]); $k++){
 	if($old_selected_data->Response->Results[0][$k]->ResultIndex == $result->ResultIndex ){	
-
-	$old_OB_fare=$old_selected_data->Response->Results[0][$k]->Fare;
-	$offer_fare=$old_OB_fare->OfferedFare;
-    $publish_fare=$old_OB_fare->PublishedFare;
-    $baseFare_old = $result->Fare->BaseFare;
-    $yq_fare_old = $result->Fare->YQTax;
-		
+		$old_OB_fare=$old_selected_data->Response->Results[0][$k]->Fare;
+		$offer_fare=$old_OB_fare->OfferedFare;
+		$publish_fare=$old_OB_fare->PublishedFare;
+		$baseFare_old = $result->Fare->BaseFare;
+		$yq_fare_old = $result->Fare->YQTax;
 	}
-
 }
 
 $DirPublishedFarePrice =  ( $customer_fare );
-
 //$DirPublishedFarePrice = $DirPublishedFarePrice + $baggageData;
-
 $_SESSION ['flight'] [$sessionid] ['flight_total_fare'] = $DirPublishedFarePrice;
 $_SESSION ['flight'][$sessionid]['farequote_data'] ['TraceId'] = $confrimdata->Response->TraceId;
 $SearchData = $_SESSION ['flight'] [$sessionid] ['search_RequestData'];
-
 $IsDomestic = $_SESSION["flight"][$sessionid]["search_RequestData"];
-
 $base_fare = $result->Fare->BaseFare;
-
 $tax=$DirPublishedFarePrice-$base_fare;
 $total_pax =(int)$IsDomestic['no_adult'] + (int)$IsDomestic['no_child'] +  (int)$IsDomestic['no_infants'] ;
 $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_RequestData'];
- if($search_data["type"] == 'MultiWay'){
-
+if($search_data["type"] == 'MultiWay'){
     $depart=$IsDomestic['dept_date_m']['0'];
-
- }
-
- else{
+}else{
 	 $depart=$search_data["depart_date"];
- }
- 
- // echo "<pre>";
-// print_r($result);die;
- // print_r($bp_fare_data);
- $_SESSION['copont_applied'] = FALSE;
+}
+$_SESSION['copont_applied'] = FALSE;
+$seatData = isset($baggage->Response->SeatDynamic[0]->SegmentSeat[0]->RowSeats) ?  $baggage->Response->SeatDynamic[0]->SegmentSeat[0]->RowSeats : [];
+$noOfPassengers = 0;
+	
 ?>
 
 <!-- Flight Booking Details -->
@@ -108,30 +85,24 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 						<div class="flt-booking-top">
 							<h5>
 							<?php 
-							if($search_data["type"] == 'MultiWay'){
-							echo date("j M Y, D", strtotime($search_data['dept_date_m'][0]) );?>	
-							
-								
-							<?php } else {?>
-							<?php 
-							echo date("j M Y, D", strtotime($search_data['depart_date']) );?>
-							<?php }?>
-							
+									if($search_data["type"] == 'MultiWay'){
+										echo date("j M Y, D", strtotime($search_data['dept_date_m'][0]) );
+									} else {
+										echo date("j M Y, D", strtotime($search_data['depart_date']) );
+									}
+								?>
 							<a href="#baggage-fare-rule" class="float-right baggage-fare" data-toggle="modal" data-target="">Baggage and Fare Rules</a>
 							</h5>
 						</div>
 						<?php
 							foreach ($segment as $segment123) {
-						$segmentcountint = count($segment123);
-                    ?>
-					 <?php foreach ($segment123 as $segmentflight) {
-						 
-						$to_time = strtotime($segmentflight->Origin->DepTime);
-						$from_time = strtotime($segmentflight->Destination->ArrTime);
-						$minutess =  round(abs($to_time - $from_time) / 60,2);
-						$hours = floor($minutess / 60).'h :'.($minutess -   floor($minutess / 60) * 60).'m';
+								$segmentcountint = count($segment123);
+                     				foreach ($segment123 as $segmentflight) {
+										$to_time = strtotime($segmentflight->Origin->DepTime);
+										$from_time = strtotime($segmentflight->Destination->ArrTime);
+										$minutess =  round(abs($to_time - $from_time) / 60,2);
+										$hours = floor($minutess / 60).'h :'.($minutess -   floor($minutess / 60) * 60).'m';
 						 ?>
-
 						<div class="flt-booking-dts">
 							<div class="row">
 							
@@ -176,14 +147,10 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 								</div>
 							</div>
 						</div>
-						
-					 <?php }?>
-						  <?php } ?>
-						
-					</div><!--/ Flight details list oneWay end Paul -->
+					 <?php }  } ?>
+					</div>
+					<!--/ Flight details list oneWay end Paul -->
 
-					
-					
 					<!-- Traveller Details Start From here -->
 					 <form action="<?php echo site_url(); ?>flight/payment_request"  method="post" id="travellerdetail">
 					<div class="trvl-details">
@@ -192,12 +159,15 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 								<h5>Traveller Details</h5>
 							</div>
 							<?php
+
                     			$FareBreakdown = $result->FareBreakdown;
                     			if (is_numeric(key($FareBreakdown))) {
                         		foreach ($FareBreakdown as $key => $FBDetails) {
                             		$PassengerType = passanger_t_f_number($FBDetails->PassengerType);
                             		$noOfPess = $FBDetails->PassengerCount;
-                            		for ($i = 1; $i <= $noOfPess; $i ++) { ?>
+                            		$noOfPassengers = $noOfPassengers + $noOfPess;
+											for ($i = 1; $i <= $noOfPess; $i ++) { 
+								?>
 							<div class="flt-booking-dts">
 								<div class="col-fly-inn">
 					                 <label><?php echo $PassengerType . ' ' . $i; ?> </label>
@@ -209,57 +179,40 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
                                                 error_msg="Please select Title for <?php echo $PassengerType; ?>"
                                                 key_unique="<?php echo $PassengerType . $i; ?>">
 					                          <option value="">Select Title</option>
-											    <?php
-												if ($PassengerType == "Adult") {
-                                                ?>
+											<?php if ($PassengerType == "Adult") { ?>
 					                          <option value="Mr">Mr</option>
 					                          <option value="Mrs">Mrs</option>
 					                          <option value="Miss">Miss</option>
 					                          <option value="Ms">Ms</option>
-											   <?php
-                                            } else {
-												 ?>
+											   <?php } else { ?>
                                                 <option value="Mstr">Mstr</option>
                                                 <option value="Miss">Miss</option>
                                             <?php } ?>
 											</select>
 					                     </div>
 					                   </div>
-									   
 					                   <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 					                      <div class="form-group">
 					                        <input type="text" class="form-control pax_validation_field for_pop_data"  placeholder="Enter First Name"  pestype="<?php echo $PassengerType;?>" forend="1" id="<?php echo $PassengerType; ?>FirstName_<?php echo $i; ?>"  placeholder="Enter First Name" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)" name="<?php echo $PassengerType; ?>FirstName_<?php echo $i; ?>"error_msg="Please enter first name for <?php echo $PassengerType; ?>">
 					                      </div>
 					                    </div>
-										
 					                     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 					                        <div class="form-group">
 					                          <input type="text" class="form-control pax_validation_field for_pop_data"  pestype="<?php echo $PassengerType;?>" forend="2" id="<?php echo $PassengerType; ?>LastName_<?php echo $i; ?>" placeholder="Enter Last Name" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)" name="<?php echo $PassengerType; ?>LastName_<?php echo $i; ?>"error_msg="Please enter Last name for <?php echo $PassengerType; ?>">
 					                        </div>
 					                      </div>
-										  
 					                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 					                        <div class="form-group">
 					                        <input type="text" class="form-control pax_validation_field gender_auto_fill"  id="<?php echo $PassengerType; ?>Gender_<?php echo $i; ?>" name="<?php echo $PassengerType; ?>Gender_<?php echo $i; ?>" error_msg="Please select gender  for <?php echo $PassengerType; ?>" readonly key_unique="<?php echo $PassengerType . $i; ?>" placeholder="Gender" >
 					                      </div>
 					                      </div>
-										  
 									 <?php if ($IsDomestic['IsDomestic'] == "false" || $dsa_airline_code=="I5" || $PassengerType == "Child" || $PassengerType == "Infant" ) { ?>	  
 									 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 					                      <div class="form-group">
 					                        <input type="text"  error_msg="Please select DOB for <?php echo $PassengerType; ?>" name="<?php echo $PassengerType; ?>Date_<?php echo $i; ?>" class="form-control pax_<?php echo $PassengerType; ?>_dob pax_validation_field co_dateofbirth" placeholder="Date of Birth" readonly>
 					                      </div>
-					                    </div>
-										
-									 <?php }?>
-										
-										
-										
-										
-										<?php
-										 if ($IsDomestic ['IsDomestic'] == "false") {
-
-                                        ?>
+					                    </div>										
+									 <?php } if ($IsDomestic ['IsDomestic'] == "false") { ?>
 					                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 					                        <div class="form-group">
 					                          <input type="text"  error_msg="Please Enter Passport no for <?php echo $PassengerType; ?>" name="<?php echo $PassengerType; ?>PassportNum_<?php echo $i; ?>" class="form-control pass_number pax_validation_field" id="passport-no" placeholder="Passport No">
@@ -280,21 +233,18 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 					                        </select>
 					                      </div>
 					                    </div>
-								
 										 <?php }?>
-
-
 								</div>
 								</div>
 							</div>
-							<?php 
-								if($PassengerType !='Infant'){
-
-							 if(isset($baggage->Response->MealDynamic) && !empty($baggage->Response->MealDynamic)) { ?>
+							<?php if($PassengerType !='Infant' && isset($baggage->Response->MealDynamic) && !empty($baggage->Response->MealDynamic)){ ?>
 								 <div class="flt-booking-wrap mb-2 mb-md-3">
-					<div class="flt-booking-top">
-						<h5><span><i class="icofont-school-bag font-22"></i> Baggage</span> <span class="float-right"><i class="icofont-fast-food font-22"></i> Meal & Bavrage</span></h5>
-					</div>
+										<div class="flt-booking-top">
+											<h5>
+												<span><i class="icofont-school-bag font-22"></i> Baggage</span> 
+												<span class="float-right"><i class="icofont-fast-food font-22"></i> Meal & Bavrage</span>
+											</h5>
+										</div>
 					<div class="flt-booking-dts">
 						<div class="row">
 							<div class="col-md-6">
@@ -306,46 +256,29 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 										 <option value="<?php echo ($baggage->Response->Baggage[0][$j]->Weight); ?>"><?php echo ($baggage->Response->Baggage[0][$j]->Weight); ?> Kilogram  - <?php echo ($baggage->Response->Baggage[0][$j]->Price); ?> <?= $current_currency?></option>
 									 		<?php } ?>	
 									 	</select>
-									
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
 									<select class="form-control mealFareDetail" data-value="<?php echo $PassengerType; ?>_<?php echo $i; ?>" name="meal[]" class="mealcheckbox">
 										<option value="">Select Meals</option>
-								    <?php for($k=0; $k<count($baggage->Response->MealDynamic[0]); $k++){ 
-												if(!empty($baggage->Response->MealDynamic[0][$k]->AirlineDescription)){?>
-										
+								    <?php 
+										for($k=0; $k<count($baggage->Response->MealDynamic[0]); $k++){ 
+											if(!empty($baggage->Response->MealDynamic[0][$k]->AirlineDescription)){
+									?>	
 										<!-- <option value="<?php echo $baggage->Response->MealDynamic[0][$k]->AirlineDescription; ?>"><?php echo ($baggage->Response->MealDynamic[0][$k]->AirlineDescription); ?> - <?php echo ($baggage->Response->MealDynamic[0][$k]->Price); ?> INR</option> -->
 										<option value="<?php echo $baggage->Response->MealDynamic[0][$k]->AirlineDescription; ?>"><?php echo ($baggage->Response->MealDynamic[0][$k]->AirlineDescription); ?> - <?php echo ($baggage->Response->MealDynamic[0][$k]->Price); ?> <?= $current_currency?></option>
-
-
 									<?php } } ?>
 									</select>
-
 									 </div>
 								</div>
 							</div>
 						</div>
 					</div><!--/ Frequent Flyer end Paul -->
-				<?php } } ?>
-								 <?php
-										 
-                            }
-
-                        }
-
-                    }
-
-                    ?>	
-							
+					<?php } ?>	
+				<?php  } } } ?>		
 						</div>
 				
-
-				
-
-
-
 				<div class="flt-booking-wrap mb-2 mb-md-3">
 						<div class="flt-booking-top">
 							<h5>Frequent Flyer</h5>
@@ -359,16 +292,15 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 								</div>
 							</div>
 						</div>
-					</div><!--/ Frequent Flyer end Paul -->
+					</div>
+					<!--/ Frequent Flyer end Paul -->
 				
 					<!-- GST Details Start From here -->
-				
 						<div class="trv-topbar mb-3">
 						 <?php if ($result->GSTAllowed) {?>
 							<div class="flt-booking-top htl-srch-rtng">
 								<h5>
-							 <?php
-								if ($result->IsGSTMandatory == 1) {?>
+							 <?php if ($result->IsGSTMandatory == 1) {?>
 									<label for="gst-air" id="gst-airline">
 									<input type="hidden" name="GSTAllowed" value="gst_data_filed"  >
 			 	 						<input type="checkbox" id="gst-air" class="flightfare gstAllowed" checked name="GSTAllowed" value="gst_data_filed">
@@ -377,16 +309,13 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 			 	 						</span>
 			 	 					</label>
 								<?php } else {?>
-								
 								<label for="gst-air" id="gst-airline">
 			 	 						<input type="checkbox" id="gst-air" class="flightfare gstAllowed" name="GSTAllowed" value="gst_data_filed">
 			 	 						<span>
 			 	 							GST Not Mandatory for this Airline
 			 	 						</span>
 			 	 					</label>
-
 								<?php }?>								
-									
 			 	 				</h5>
 							</div>
 						 <?php }?>
@@ -429,49 +358,14 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 							</div>
 						</div>
 
-						<!-- Gst Details end from here -->
-						
-						<!--=====Apply Coupon=======--->
-						
-<!--					
-					<div class="trv-topbar mb-3">	
-					 <div class="flt-booking-top">
-								<h5>Apply Coupon</h5>
-							</div>
-							
-						
-							<div class="flt-booking-dts">	
-								<div class="col-fly-inn">
-									<div class="row">
-									
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-              <div class="form-group">
-                <div id="massegealert" > </div>
-              </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <div class="form-group">
-                <input type="text" style="max-width: 380px" id="user_coupon" name="coupon" class="form-control" placeholder="Enter Coupon code to get special discount">
-              </div>
-            </div>
+						<?php
+								array_shift($seatData);
+								if( count($seatData) > 0) {
+									$this->load->view("seat_selection",["seatData"=>$seatData]);
+								}
+							?>
 
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <div class="form-group">
-                <a href="#none" id="add_coupon" class="btn btn-primary block">Add coupon</a>
-              </div>
-            </div>
-										
-					                
-				                 	</div>
-				               </div>
-							
-						</div>
-						</div>
-						-->
-						
-						
-						<!--=======Coupon End=======--->
-						
+						<!-- Gst Details end from here -->
 						<div class="trv-topbar">
 							<div class="flt-booking-top">
 								<h5>Personal Details</h5>
@@ -482,18 +376,11 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 					                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 					                      <div class="form-group">
 					                        <label>Enter Your Email:</label>										
-											
-											<?php 
-											
-											if ($this->session->userdata ( 'Userlogin' ) != NULL) {?>
+											<?php if ($this->session->userdata ( 'Userlogin' ) != NULL) {?>
 											<input type="email" class="form-control pax_validation_field for_email_confirm" id="your-email" placeholder="Enter Your Email" name="cust_email" value="<?php echo $this->session->userdata("Userlogin")["userData"]->cust_email; ?>">
 										<?php } else {?>
 											<input type="email" class="form-control pax_validation_field for_email_confirm" id="your-email" placeholder="Enter Your Email" name="cust_email">
 										<?php }?>
-											
-											
-											
-											
 					                      </div>
 					                    </div>
 					                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -501,8 +388,7 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 					                        <label>Enter Your Mobile:</label>
 					                        <input type="number" class="form-control pax_validation_field for_contact_confirm" id="enter-mobile" placeholder="Enter Your Mobile" name="cust_mobile_no">
 					                      </div>
-					                    </div>
-										
+					                    </div>										
 										<div class="col-md-12">
 											<div class="checkbox htl-srch-rtng">
 												<label for="accept-pol" class="accept">
@@ -513,16 +399,14 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 												</label>
 											</div>
 										</div>
-											
-									
 									<!--========Customer wallet or payment gatway==========-->
 									 <!--Radio buttons for balance-->
 	   <!--check customer wallet -->
-		   
-		  <?php if($this->session->userdata("Userlogin") != NULL){
-				$bp_customer_total_balance=$this->user_data->cust_balance;
-				$bp_total_fare = $customer_fare;		
-				if($bp_customer_total_balance > 0){
+		  <?php 
+		  		if($this->session->userdata("Userlogin") != NULL){
+					$bp_customer_total_balance=$this->user_data->cust_balance;
+					$bp_total_fare = $customer_fare;		
+					if($bp_customer_total_balance > 0){
 			?>
                         <div class="col-md-12">
 						<div class="checkbox htl-srch-rtng">
@@ -539,21 +423,16 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 							</label>
                         </div>
 						</div>
-						
 						<?php } }?>
 							<?php 
 							$getwayLists = $getwayList;							
 							$convenience_amount= $getwayLists->dsapayg_convenience_fee;
 							$convenience_min_amount= $getwayLists->dsapayg_convenience_fee;
-							if($getwayLists->dsapayg_type=="fix")
-						  {
-							 $final_con =  round($getwayList->dsapayg_convenience_fee*$total_pax);
-						  } else {
-							$final_con =  round(( $DirPublishedFarePrice * $getwayList->dsapayg_convenience_fee)/100);
-						  } 		
-						  
-
-
+							if($getwayLists->dsapayg_type=="fix"){
+								$final_con =  round($getwayList->dsapayg_convenience_fee*$total_pax);
+							} else {
+								$final_con =  round(( $DirPublishedFarePrice * $getwayList->dsapayg_convenience_fee)/100);
+							} 		
 						 ?>
 				<div class="col-md-12">		
 				<div class="checkbox">	
@@ -562,6 +441,8 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 							<?php 
 								if($current_currency == "AED"){
 									echo "&nbsp;&nbsp; PayD Payment";
+								}else if($current_currency == "INR"){
+									echo '&nbsp;&nbsp; RazorPay'; 
 								}else{
 									//echo $getwayLists->dsapayg_gateway_name; 
 									echo '&nbsp;&nbsp; CC Avenue'; 
@@ -570,26 +451,16 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 						</label>
 							<br/>
 							<!--<span class=""><?= getCurrencySymbol($current_currency) ?> <?php echo $final_con ?> Convenience Fee (Will be included in total fare at the time of payment) </span>-->
-							<?php $_SESSION[$getwayLists->dsapayg_gateway_name]['Conv_fee'] = $final_con; ?>
-							<?php $_SESSION['flight']['Conv_fee'] = $final_con; ?>
-
-
+							<?php 
+								$_SESSION[$getwayLists->dsapayg_gateway_name]['Conv_fee'] = $final_con;
+								$_SESSION['flight']['Conv_fee'] = $final_con; 
+							?>
 							<br/><br/>
 							</div>
 							</div>
-							<?php //}  ?> 
-							
-							
-									<?php  ?>
-									
-
-									<!---========END Customer Wallet or payment==============-->
-											
+									<!---========END Customer Wallet or payment==============-->			
 										  <div class="col-lg-12">
-										  
-										  <?php 
-											
-											if ($this->session->userdata ( 'Userlogin' ) != NULL) {?>
+										  <?php if ($this->session->userdata ( 'Userlogin' ) != NULL) {?>
 											<div class="form-group">
 												<ul class="list-inline">
 												 <input type="hidden" name="sessionid" value="<?php echo $this->input->get('seesionid'); ?>" />
@@ -606,31 +477,23 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 													<li class="list-inline-item">
 														<span>Or</span>
 													</li>
-													<li class="list-inline-item">
-														
+													<li class="list-inline-item">		
 													<a data-toggle="modal" data-target="#login_modal" class="btn btn-info purchasenow text-white">Login & Continue </a>	
-													
-														
 													</li>
 												</ul>
 											</div>
-											
 											<?php }?>
-											
-											
 					                    </div>
 				                 	</div>
 				               </div>
 							</div>
 						</div>
 						<!-- Gst Details end from here -->
-					</div><!--/ Traveller Details Start From here -->
-
-
+					</div>
+					<!--/ Traveller Details Start From here -->
 					</form>
 				</div>
 			</div>
-		
 		<div class="col-md-3">
 				<div class="flght-side-det">
 					<div class="review_title clearfix">
@@ -638,7 +501,6 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 		            </div>
 		            <div class="contant">
 		            	<ul class="fare_details list-unstyled mb-0">
-						 
 		            		<li>
 								<a class="collapsed" href="javascript:void(0)" role="button" data-toggle="collapse" data-target="#basefare">Base Fare<small>(<?php echo $total_pax; ?> Traveller) </small> <i class="icofont-rounded-down"></i></a><span class="float-right"><?= getCurrencySymbol($current_currency) ?> <?php echo round($base_fare); ?></span>
 								<div class="collapse" id="basefare" aria-expanded="false">
@@ -656,41 +518,33 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 											<span class="float-right"><?= getCurrencySymbol($current_currency) ?> <?php echo round($FBDetails->BaseFare); ?></span>
 										</li>
 										  <?php } } ?>	
-										
 									</ul>
 								</div>
 							</li>
 							<li>Tax (+) <span class="float-right"><?= getCurrencySymbol($current_currency) ?> <?php echo round($tax) ?></span></li>
-						 	<?php  if($this->session->userdata("Userlogin") != NULL && $this->user_data->cust_balance > 0 && $wallet[0]->detected_wallet_percentage > 0 && $wallet[0]->detected_wallet_percentage < 100){ ?> 
+						 	<?php if($this->session->userdata("Userlogin") != NULL && $this->user_data->cust_balance > 0 && $wallet[0]->detected_wallet_percentage > 0 && $wallet[0]->detected_wallet_percentage < 100){ ?> 
 			            		<li>Wallet Amount (-)<span class="float-right"><?= getCurrencySymbol($current_currency) ?> <?php echo ($this->user_data->cust_balance * $wallet[0]->detected_wallet_percentage) / 100; ?></span></li>
 			            	<?php } ?>
-
-			            	
 							<li>Baggage <span class="float-right"><?= getCurrencySymbol($current_currency) ?><span class="conv baggage-price"></span></span></li>
-
 							<li>Meal  & Bavarage <span class="float-right"><?= getCurrencySymbol($current_currency) ?><span class="conv meal-price"></span></span></li>
-
-							
-
-
-							<?php if($getwayList!="0"){              
-						   if($getwayList->dsapayg_type=="fix")
-								  {
-									$nkwithconfee =  round($getwayList->dsapayg_convenience_fee*$total_pax);
-								  } else {
-									$nkwithconfee =  round(( $DirPublishedFarePrice * $getwayList->dsapayg_convenience_fee)/100,2);
-								  } 
-						   ?>
+							<?php 
+								if($getwayList!="0"){              
+						   			if($getwayList->dsapayg_type=="fix"){
+										$nkwithconfee =  round($getwayList->dsapayg_convenience_fee*$total_pax);
+									} else {
+										$nkwithconfee =  round(( $DirPublishedFarePrice * $getwayList->dsapayg_convenience_fee)/100,2);
+									} 
+						   	?>
 						   <!--
 						   <li>Convenience Fee<span class="float-right"><?= getCurrencySymbol($current_currency) ?><span class="gateway_charge"> <?php echo $nkwithconfee; ?> <span></span></li>
 						   -->
 						  <?php } else { $nkwithconfee = 0; } ?> 
 						   <li style="display: none;" class="coupon none"></li>
 		            		<li>Total Fare<span class="float-right"><?= getCurrencySymbol($current_currency) ?><span class="final_fare finalamount">
-		            			<?php echo round($customer_fare); ?></span></span></li>
+		            			<?php echo round($customer_fare); ?></span></span>
+							</li>
 		            	</ul>
 		            </div>
-		       
 							<!-- Apply Coupon -->
 							<div class="flght-side-det">
 								<div class="review_title">
@@ -707,7 +561,6 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 								</div>
 							</div>
 					   		<!-- Apply Coupon end -->
-
 			   </div>
 			</div>
 		</div>
@@ -1240,5 +1093,24 @@ $search_data=$_SESSION ['flight'] [$this->input->get('seesionid')] ['search_Requ
 		});
 		$("form").submit(function() {
 			$(".gstAllowed").removeAttr("disabled");
+		});
+
+		$("input[name^='seat_selection']").on("click",function(){
+			var $this = $(this);
+			var noOfPassenger = `<?= $noOfPassengers ?>`;
+			var allowedSelection = 1;
+			if($(this).is(":checked")){
+				$(this).prop("checked",false);
+			}
+			$("input[name^='seat_selection']").each(function(index,item){
+				if($(item).is(":checked")){
+					if(noOfPassenger > allowedSelection ){
+						allowedSelection++;
+					}else{
+						$(item).prop("checked",false);
+					}
+				} 
+			});
+			$this.prop("checked",true);
 		});
 	</script>

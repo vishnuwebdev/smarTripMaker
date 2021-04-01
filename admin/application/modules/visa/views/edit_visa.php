@@ -45,7 +45,7 @@
 							<label class="col-sm-2 control-label"><?php echo $this->lang->line ( "visa" );?>  <?php echo $this->lang->line ( "title" );?> </label>
 							<div class="col-sm-9">
 								<div class="input text">
-									<?php echo form_input(array('name'=>'visa_title','class'=>'form-control'),set_value('visa_title', isset($result->visa_title) ? $result->visa_title : ''));?>
+								<?php echo form_input(array('name'=>'visa_title','maxlength'=>200,'class'=>'form-control'),set_value('visa_title', isset($result->visa_title) ? $result->visa_title : ''));?>
 									<?php echo form_error('visa_title', '<div class="error">', '</div>');?>
 								</div>
 							</div>
@@ -54,7 +54,7 @@
 							<label class="col-sm-2 control-label"><?php echo $this->lang->line ( "visa" );?>  <?php echo $this->lang->line ( "amount" );?> </label>
 							<div class="col-sm-9">
 								<div class="input text">
-									<?php echo form_input(array('name'=>'visa_amount','class'=>'form-control'),set_value('visa_amount', isset($result->visa_amount) ? $result->visa_amount : ''));?>
+								<?php echo form_input(array('name'=>'visa_amount',"onkeypress"=>"return onlyNumberKey(event)",'class'=>'form-control'),set_value('visa_amount', isset($result->visa_amount) ? $result->visa_amount : ''));?>
 									<?php echo form_error('visa_amount', '<div class="error">', '</div>');?>
 								</div>
 							</div>
@@ -63,7 +63,7 @@
 							<label class="col-sm-2 control-label"><?php echo $this->lang->line ( "visa" );?>  Duration </label>
 							<div class="col-sm-9">
 								<div class="input text">
-									<?php echo form_input(array('name'=>'visa_duration','class'=>'form-control'),set_value('visa_duration',isset($result->duration) ? $result->duration : ''));?>
+								<?php echo form_input(array('name'=>'visa_duration',"onkeypress"=>"return onlyNumberKey(event)",'class'=>'form-control'),set_value('visa_duration',isset($result->duration) ? $result->duration : ''));?>
 										<?php echo form_error('visa_duration', '<div class="error">', '</div>');?>
 								</div>
 							</div>

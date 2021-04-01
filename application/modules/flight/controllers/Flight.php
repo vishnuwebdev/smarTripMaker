@@ -556,8 +556,6 @@ class Flight extends MX_Controller {
 		) );
 		$result = curl_exec ( $ch );
 		$mealDynamicResult = json_decode ( $result );
-		// PrintArray($mealDynamicResult);
-		// die;
 		$_SESSION['flight'] [$sessionid] ['optional'] = $mealDynamicResult;		 
 		// -------------------------------- //
 		$isdomestic = $this->session->userdata ( "flight" ) [$sessionid] ['search_RequestData'] ['IsDomestic'];
@@ -644,24 +642,15 @@ class Flight extends MX_Controller {
 		$this->db->where('passenger',$this->input->post ( 'passenger' ));
 		$this->db->where('type',$this->input->post ( 'type' ));
 		$this->db->delete('temp_baggage_data');
-	   	$response = $this->Common_Model->insert_table( "temp_baggage_data", $formData );
-	   	
+	   	$response = $this->Common_Model->insert_table( "temp_baggage_data", $formData );   	
 	   	// $baggageData = $this->Common_Model->get_all_record_where("*",
 	   	//  	"sessionId",
 	   	//  	$sessionid, 
 	   	//  	"temp_baggage_data"
 	   	//  );
 	   	$where = array('sessionId' => $sessionid, 'type' => $this->input->post ( 'type' ));
-
-
 	   	$baggageData = $this->Common_Model->get_all_record_where("*", $where, "temp_baggage_data");
-
-
-	   	// print_r($baggageData);
-	   	// die;
-
 	   	$totalPrice = [];
-
 	   	for($i=0; $i<=count($baggageData); $i++){
 	   		$totalPrice[] = $baggageData[$i]->baggagePrice;
 	   	}
@@ -678,15 +667,10 @@ class Flight extends MX_Controller {
 
 	public function remove_temp_data(){
 		$sessionid = $this->input->post ( 'sessionId' );
-
 		$this->db->where('sessionId', $this->input->post ( 'sessionId' ));
 		$this->db->delete('temp_meals_data');
-
 		$this->db->where('sessionId', $this->input->post ( 'sessionId' ));
 		$this->db->delete('temp_baggage_data');
-
-
-
 	}
 
 	public function set_meals_data(){
@@ -910,7 +894,6 @@ class Flight extends MX_Controller {
 		$sessionid = $this->input->post ( 'sessionid' );
 		$whereBaggage = array('sessionId' => $sessionid,'type'=>'OB');
 		$baggageData = $this->Common_Model->get_all_record_where("*", $whereBaggage, "temp_baggage_data");	
-		
 		$baggagePrice = [];
 		$baggageWeight = [];
 		for($i=0; $i<=count($baggageData); $i++){
@@ -960,6 +943,8 @@ class Flight extends MX_Controller {
 		} else {
 			$transaction_fee = 0;
 		}
+		$seatObData = $this->input->post("seat_selection") ? json_encode($this->input->post("seat_selection")) : "";
+		$seatData = $this->input->post("seat_selection") ? $this->input->post("seat_selection") : "";
 		if ($searchData ['type'] == "Return" && $searchData ['IsDomestic'] == "true") {
 			$_SESSION ['flight'] [$sessionid] ['farequote_data_OB'] ['customer_data'] = $_POST;
 			$bookingData = $this->returnbookingdata ( $searchData, $sessionid, $cusid, $transaction_fee );
@@ -1033,6 +1018,7 @@ class Flight extends MX_Controller {
 				'fbook_sessionid' => $sessionid,
 				'fbook_module'	=> "B2C",
 				'fbook_transaction_fee'	=> $transaction_fee,				
+				'fbook_ob_seat' => $seatObData
 			);
 		}
 		$bookingid = $this->Flight_Model->insert_booking ( $bookingData );
@@ -1057,6 +1043,7 @@ class Flight extends MX_Controller {
 		}
 		$ci_mobile_no = $this->input->post ( "cust_mobile_no" );
 		$ci_email = $this->input->post ( "cust_email" );
+		$j = 0;
 		foreach ( $FBreakDwn as $val ) {
 			$noOfPx = $val->PassengerCount;
 			for($i = 1; $i <= $noOfPx; $i++) {
@@ -1114,8 +1101,10 @@ class Flight extends MX_Controller {
 					'fpax_baggage_price' =>$fpax_baggage_price,
 					'fpax_meal_item' =>$fpax_meal_item,
 					'fpax_meal_price' => $fpax_meal_price,
+					'fpax_seat_code' =>  isset($seatData[$j]) ? $seatData[$j] : null
 				);
 				$this->Flight_Model->insert_booking_pax_details ( $bookingPaxDetails );
+				$j++;
 			}
 		}
 		$_SESSION ['flight'] [$sessionid] ['search_RequestData'] ["BookingId"] = $bookingid;
@@ -1248,12 +1237,9 @@ class Flight extends MX_Controller {
 				);
 				$this->Flight_Model->update_booking ( $data, $booking_id );
 				$ticket_result = $this->ticket_gds ( $book_data->Response->Response->PNR, $book_data->Response->Response->BookingId, $sessiondata, $bookingdata->fbook_sessionid, "OB" );
-
 				$ticket_data = json_decode ( $_SESSION ['flight'] [$bookingdata->fbook_sessionid] ['ticket_result_data'] );	
-				
 				if ($ticket_data->Response->Error->ErrorCode == "0" && isset ( $ticket_data->Response->Response->PNR )) {
 					if ($ticket_data->Response->Response->TicketStatus == "1") {
-						
 						$ticketRes = json_encode ( $ticket_data );
 						$tempticket_data = array (
 							'ftemp_ref_id' => $booking_id,
@@ -1315,6 +1301,19 @@ class Flight extends MX_Controller {
 				$customer_data = $_SESSION ['flight'] [$sessionid] ['farequote_data'] ['customer_data'];
 			} else {
 				$customer_data = $_SESSION ['flight'] [$sessionid] ['farequote_data_OB'] ['customer_data'];
+			}
+		}
+		$seatData = isset($_SESSION ['flight'] [$sessionid]['optional']->Response->SeatDynamic[0]->SegmentSeat[0]->RowSeats) ? $_SESSION ['flight'] [$sessionid]['optional']->Response->SeatDynamic[0]->SegmentSeat[0]->RowSeats : null;
+		$seatSelectedDynamicData = [];
+		if(!empty( $seatData) && count($customer_data['seat_selection']) > 0){
+			$selectedSeat = $customer_data['seat_selection'];
+			array_shift( $seatData);
+			foreach($seatData as $seat){
+				foreach($seat->Seats as $eachItem){
+					if(in_array($eachItem->Code,$selectedSeat)){
+						array_push($seatSelectedDynamicData,$eachItem);
+					}
+				}
 			}
 		}
 		$whereBaggage = array('sessionId' => $sessionid,'type'=>$tickettype);
@@ -1467,6 +1466,13 @@ class Flight extends MX_Controller {
 			"ResultIndex" => $ResultIndex,
 			"Passengers" => $passenger,
 		);
+		if(count($seatSelectedDynamicData) > 0){
+			// $search_data_tbo['SeatDynamic'] = $seatSelectedDynamicData;
+			$seatsLength = count($seatSelectedDynamicData);
+			for($j = 0; $j < $seatsLength; $j++){
+				$search_data_tbo["Passengers"][$j]['SeatDynamic'] =[(array) $seatSelectedDynamicData[$j]];
+			}
+		}
 		$data_string = json_encode($search_data_tbo);
 		// echo "Start Time : ".date("h:i:s")."<br>";
 		// echo "Api URL : ".$this->url . '/Ticket/';
@@ -1482,8 +1488,6 @@ class Flight extends MX_Controller {
 		));
 		$result = curl_exec($ch);
 		$arrayresult = json_decode($result);
-		// PrintArray($arrayresult);
-		// echo "End Time : ".date("h:i:s");
 		if ($tickettype == "OB") {
 			$_SESSION ['flight'] [$sessionid] ['ticket_request_data'] = $data_string;
 			$_SESSION ['flight'] [$sessionid] ['ticket_result_data'] = $result;
@@ -1666,7 +1670,6 @@ class Flight extends MX_Controller {
 		}
 	}
 	
-	
 	//get bookingData
 	public function get_booking($booking_id) {	
 		$refId = $booking_id;
@@ -1754,8 +1757,7 @@ class Flight extends MX_Controller {
 			redirect ( '/flight/flight_booking_confirm/?ref_no=' . $encrypted_string );
 		}
 	}
-	
-	
+
 	public function flight_booking_confirm() {
 		// $this->load->library('m_pdf');
 		$key = 'flightbook';
@@ -2074,6 +2076,7 @@ class Flight extends MX_Controller {
 		$session_id =  ( $_GET ['sessionid'] );		
 		$BookingDetails = $this->Flight_Model->get_booking_by_session_id ( $session_id );
 		$booking_id =  $BookingDetails->fbook_id;	
+		$this->handleRefundDeduction($booking_id);
 		$PaxDetail = $this->Flight_Model->get_pax_by_id ( $BookingDetails->fbook_id );
 		$SelectedFare = $this->Flight_Model->get_search_detail ( $booking_id, 'ob_ticket' );
 		$Sel_detail = json_decode ( $SelectedFare->ftemp_data);
@@ -2084,6 +2087,49 @@ class Flight extends MX_Controller {
 		email_send ( "info@smarttripmaker.com", "Booking Failed", $message );
 		$this->load->view ( "flight/booking_error" );
 	}
+
+	private function handleRefundDeduction($bookingId){
+		$user_id = $this->session->userdata['Userlogin']["id"];
+		if(!empty($user_id) && !empty($bookingId)){
+			//Wallet Refund
+			$refundData = $this->Flight_Model->getRefundData($bookingId,$user_id);
+			$userInfo = $this->Flight_Model->getUserInfo($user_id);
+			if(!empty($refundData) && !empty($userInfo)){
+				$deductedAmount = $refundData->amount_detected;
+				$customerBal = $userInfo->cust_balance;
+				$RefundedBal = $deductedAmount + $customerBal;
+				$this->Flight_Model->setWalletHistoryRefunded($bookingId,$user_id);
+				$this->Flight_Model->refundUserBal($user_id,$RefundedBal);
+			}
+			//Payment Gateway Refund
+			$razorPayTransaction = $this->Flight_Model->getPaymentGatewayData($bookingId);
+			if($razorPayTransaction && $razorPayTransaction->payment_data){
+				$decode = json_decode($razorPayTransaction->payment_data);
+				$amount = $razorPayTransaction->amount;
+				if($decode && $decode->razor_pay_response){
+					$razoyPayData = json_decode($decode->razor_pay_response);
+					$paymentId = $razoyPayData->razorpay_payment_id;
+					$response = $this->refundRazorPayment($paymentId,json_encode($requestData));
+					if(isset($response['id'])){
+						$this->Flight_Model->updatePaymentGatewayRefund($bookingId,json_encode($response));
+					}
+				}
+			}
+		}
+	}
+
+	private function refundRazorPayment($paymentId){
+        $ch = curl_init(RAZOR_PAY_HOST.'payments/'.$paymentId.'/refund');
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_USERPWD, RAZOR_API_KEY . ":" . RAZOR_CLIENT_SECRET);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+		));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($result,true);
+    }
 	
 	public function payment_error() {
 		$this->load->view ( "flight/payment_error" );
@@ -2301,6 +2347,20 @@ class Flight extends MX_Controller {
 		}
 	}
 	
+	private function storeAmountDeduction($booking_id,$amount){
+		$user_id = $this->session->userdata['Userlogin']["id"];
+		$formData = array (
+			"wallet_id" => $user_id,
+			"order_id" => $booking_id,
+			"customer_id" => $user_id,
+			// "amount_detected" => $totalFare,
+			"amount_detected" => $amount,
+			"amount_added" => 0,
+			"wallet_action_detail" => 'Flight payment paid by wallet.',
+			"created" => date('y-m-d h:i:s')
+		);
+		$this->VisaModel->insert_table('stm_wallet_history',$formData);
+	}
 	
 	//NEW METHOD FOR PAYMENT REQUUEST
 	public function payment_request() {
@@ -2321,42 +2381,20 @@ class Flight extends MX_Controller {
             $wallet_amt = round(convertActualPrice($wallet_amt,$currencySelected));
         }
 
-		if ($this->input->post ( 'wallet_amount' ) == "customerCash") {
-	        if($wallet_amt > 1){
-	            if($wallet_amt >= $totalFare){
-					$user_id = $this->session->userdata['Userlogin']["id"];
-					$flightAmount = ($currencySelected != 'INR') ? convertPrice($totalFare,"INR",$currencySelected) :$totalFare ;
-					$bp_agent_payment_status = $this->deduct_customer_balance($remark,$flightAmount );
-					if ($bp_agent_payment_status == "success") {
-						$_SESSION ['flight'] [$sessionid] ['search_RequestData'] ["payment_status"] = "success";
-		                $formData = array (
-		                    "wallet_id" => $user_id,
-		                    "order_id" => $booking_id,
-		                    "customer_id" => $user_id,
-							// "amount_detected" => $totalFare,
-							"amount_detected" => $flightAmount,
-		                    "amount_added" => 0,
-		                    "wallet_action_detail" => 'Flight payment paid by wallet.',
-		                    "created" => date('y-m-d h:i:s')
-		                );
-		                $this->VisaModel->insert_table('stm_wallet_history',$formData);
-						return redirect ( "flight/payment_result_customer/?ref_id=" . url_encode($booking_id) );
-					} else {
-						// echo "There is some problem in booking with your balance. Please contact Admin";
-						$this->session->set_flashdata('flash_error','There is some problem in booking with your balance. Please contact Admin');
-						return redirect('/');
-					}
-	            }else {
-	                $this->session->set_userdata("wallet_amount_detected_flight", $this->user_data->cust_balance); 
-	                $wallet_amount_detected = $this->user_data->cust_balance;
-	                $this->session->set_flashdata('flash_error','Insufficient wallet balance. Please try again.');
-	                return redirect('/');
-	            }
-	        }else {
-	            $this->session->set_flashdata('flash_error','Insufficient wallet balance. Please try again.');
-	            return redirect('/');
-	        }
-		}
+		if ($this->input->post ( 'wallet_amount' ) == "customerCash" && $wallet_amt >= $totalFare) {
+			$user_id = $this->session->userdata['Userlogin']["id"];
+			$flightAmount = ($currencySelected != 'INR') ? convertPrice($totalFare,"INR",$currencySelected) :$totalFare ;
+			$bp_agent_payment_status = $this->deduct_customer_balance($remark,$flightAmount );
+			if ($bp_agent_payment_status == "success") {
+				$_SESSION ['flight'] [$sessionid] ['search_RequestData'] ["payment_status"] = "success";
+				$this->storeAmountDeduction($booking_id,$flightAmount);
+				return redirect ( "flight/payment_result_customer/?ref_id=" . url_encode($booking_id) );
+			} else {
+				// echo "There is some problem in booking with your balance. Please contact Admin";
+				$this->session->set_flashdata('flash_error','There is some problem in booking with your balance. Please contact Admin');
+				return redirect('/');
+			}
+		} 
 		if(empty($this->input->post ( 'wallet_amount' )) || ($this->input->post ( 'wallet_amount' ) == "customerCash" && $wallet_amt < $totalFare)) {
             
             $bp_user_id = $this->dsa_data->dsa_id;
@@ -2398,11 +2436,16 @@ class Flight extends MX_Controller {
 					$nkwithconfee = $totalFare + $gatewaycon;
 					// $nkwithconfee =  $totalFare + ( $totalFare * $getwayList->dsapayg_convenience_fee)/100;
 				}
-				if(isset($searchData) && isset($searchData->PreferredCurrency) && $searchData->PreferredCurrency != "INR"){
-					$userWallet =  round(convertActualPrice($wallet_amount_detected,$searchData->PreferredCurrency));
-					$nkwithconfee = $nkwithconfee - $userWallet;
-				}else{
-					$nkwithconfee = $nkwithconfee - $wallet_amount_detected;
+				// if(isset($searchData) && isset($searchData->PreferredCurrency) && $searchData->PreferredCurrency != "INR"){
+				// 	$userWallet =  round(convertActualPrice($wallet_amount_detected,$searchData->PreferredCurrency));
+				// 	$nkwithconfee = $nkwithconfee - $userWallet;
+				// }else{
+				// 	$nkwithconfee = $nkwithconfee - $wallet_amount_detected;
+				// }
+				if($this->input->post ( 'wallet_amount' ) == "customerCash"){
+					$nkwithconfee = $nkwithconfee - $wallet_amt;
+					$deductedAmount = $this->user_data->cust_balance ;
+					$this->session->set_userdata("wallet_amount_detected_flight", $deductedAmount); 
 				}
 				$data ['gateway_data'] ['amount'] = round($nkwithconfee);
 				$data ['gateway_data'] ['currency'] = $currencySelected;
@@ -2421,6 +2464,8 @@ class Flight extends MX_Controller {
 					$this->session->unset_userdata('temp_transaction');
 					// $this->load->view ( 'flight/payment_payd', $data );
 					$this->loadAEDPaymentTransaction($data);
+				}elseif($currencySelected == "INR"){
+					$this->startPaymentGateway( $data);
 				}else{
 					$this->load->view ( 'flight/payment_cc_avenue', $data );
 				}
@@ -2535,7 +2580,6 @@ class Flight extends MX_Controller {
 	}
 	
 	
-
 	public function payment_result() {
         $ccavenueConfig = $this->Common_Model->get_ccavenue_data("ccavenue_config",'1');
         $workingKey=$ccavenueConfig->working_key;     //Working Key should be provided here.
@@ -2572,16 +2616,12 @@ class Flight extends MX_Controller {
 	}
 
 
-	
 	//=========deduct custome balance
 	function deduct_customer_balance($remark, $totalFare) {		
 		$bp_dsa_id = $this->session->userdata("Userlogin")['userData']->cust_id;
-		$bp_dsa_company_name = $this->session->userdata("Userlogin")["name"];		
-		
+		$bp_dsa_company_name = $this->session->userdata("Userlogin")["name"];			
 		$bp_credit = $totalFare;
-		
 		$bp_old_balance = $this->user_data->cust_balance;
-		
 		if ($bp_old_balance >= $bp_credit) {
 			$bp_new_balance = $bp_old_balance - $bp_credit;
 			$data_2 = array (
@@ -2610,9 +2650,7 @@ class Flight extends MX_Controller {
     //=========
 	
 	
-	
 	//GET COUPON
-	
 	public function Getcoupon()
 	{
 		$dsa_id = $this->dsa_data->dsa_id;
@@ -2738,7 +2776,6 @@ class Flight extends MX_Controller {
     }
 
 	//LOGIN AND CONTINUE
-
     public function login() {
     	$email = $this->security->xss_clean($this->input->post('email'));
     	$password = MD5($this->security->xss_clean($this->input->post('password')));
@@ -2764,9 +2801,7 @@ class Flight extends MX_Controller {
     }
 
 
-
 	//=====OLD Function
-
     public function payment_request1() {
 
 		//$this->load->view ( 'booking_confirm');
@@ -2779,8 +2814,6 @@ class Flight extends MX_Controller {
     	redirect("flight/ticket_booking/".$_SESSION ['flight'] [$sessionid] ['SearchData'] ["BookingId"]);
 
     }	
-
-
 
 
     public function payment_result1() {
@@ -2814,9 +2847,6 @@ class Flight extends MX_Controller {
 
 
 	//TICKET BOOKING DETAIL FOR CUSTOMER AS A GUEST
-
-	//TICKET BOOKING DETAIL FOR CUSTOMER AS A GUEST
-
     public function print_eticket()
     {
     	if ($this->input->server ( 'REQUEST_METHOD' ) == "POST")
@@ -2895,6 +2925,112 @@ class Flight extends MX_Controller {
 		//echo $data_string;
 
     }
+
+	private function startPaymentGateway($data){
+		$orderData = $this->generateOrderData($data['gateway_data']);
+		$orderResponse = $this->generateRazorOrder($orderData);
+		$this->storeTransactionData($data['gateway_data'],$orderResponse);
+		if(isset($orderResponse['error'])){
+			return redirect("/");
+			$this->session->set_flashdata('flash_error','Sorry! Unable to proceed your payment request. Please try again.');
+		}else{
+			$data['gatewayData'] = $orderResponse;
+			$data['email'] = $this->input->post('cust_email');
+			$data['phone'] = $this->input->post('cust_mobile_no');
+			$this->session->set_userdata('flightTransactionData', $data);
+			$this->load->view('razor_gateway_submit',$data);
+		}
+    }
+
+	private function generateOrderData($data){
+        $this->session->unset_userdata('flightTransactionData');
+        $orderData = [
+            "amount" => $data['amount']*100,
+            "currency" => "INR",
+            "receipt" => "flight_".$data['merchant_param1']
+        ];
+        return json_encode($orderData);
+    }
+
+	private function generateRazorOrder($orderData){
+        $ch = curl_init(RAZOR_PAY_HOST.'orders');
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $orderData);
+        curl_setopt($ch, CURLOPT_USERPWD, RAZOR_API_KEY . ":" . RAZOR_CLIENT_SECRET);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+			'Content-Length: ' . strlen($orderData)
+		));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($result,true);
+    }
+
+	private function storeTransactionData($paymentData,$orderData){
+        $dbData = [];
+        $dbData['booking_id'] = $paymentData['order_id'];
+        $dbData['order_id'] = $paymentData['order_id'];
+        $dbData['order_status'] = "Pending";
+        $dbData['amount'] = $paymentData['amount'];
+        $dbData['tracking_id'] = $orderData['id'];
+        $isExist = $this->Flight_Model->getFlightTransaction($dbData['booking_id']);
+        if($isExist){
+            $this->Flight_Model->updatePaymentTransaction($dbData);
+        }else{
+            $this->Flight_Model->addInitialTransaction($dbData);
+        }
+    }
+
+	public function handleResponse(){
+        $response = ['status' => 'failed','route' => 'visa'];
+        if($this->session->has_userdata('flightTransactionData')){
+            $flightTempData = $this->session->userdata('flightTransactionData');
+            $status = $_POST['status'];
+            $responseData = $_POST['response'];
+            if($status == "success" && $responseData['razorpay_order_id'] == $flightTempData['gatewayData']['id']){
+                $flightTempData['paymentData']['tracking_id'] = $responseData['razorpay_order_id'];
+				$flightTempData['paymentData']['amount'] = $flightTempData['gateway_data']['amount'];
+				$flightTempData['paymentData']['order_id'] = $flightTempData['gateway_data']['order_id'];
+                $flightTempData['paymentData']['order_status'] = "Success";
+                $flightTempData['paymentData']['discount_value'] = 0;
+                $flightTempData['paymentData']['type'] = "razor_pay";
+                $flightTempData['paymentData']['razor_pay_response'] = json_encode($responseData);
+                $flightTempData['paymentData']['trans_date'] = date("d/m/Y H:m:i");
+				$this->Flight_Model->addFlightPayment($flightTempData['paymentData']);
+                $this->session->unset_userdata('flightTransactionData');
+                $this->session->set_flashdata('flash_success','Thank you for booking flight ticket. Your transaction is successful.');
+                $response['status'] = 'success';
+				$BookingId = isset($flightTempData['gateway_data'] ["order_id"]) ?$flightTempData['gateway_data'] ["order_id"] : 0;
+				$data = array ('fbook_payment_status' => $orderStatus );
+				$this->Flight_Model->update_booking ( $data, $BookingId );
+				$response['route'] = '/flight/paymentSuccess/'.$BookingId;	
+			}else{
+				$bookingId = isset($flightTempData['gateway_data'] ["order_id"]) ?$flightTempData['gateway_data'] ["order_id"] : 0;
+				$_SESSION['flight']['search_RequestData']["BookingId"] = $bookingId ;
+				$flightTempData['paymentData']['tracking_id'] = $flightTempData['gatewayData']['id'];
+                $flightTempData['paymentData']['order_status'] = "Failed";
+				$flightTempData['paymentData']['amount'] = $flightTempData['gateway_data']['amount'];
+				$flightTempData['paymentData']['order_id'] = $flightTempData['gateway_data']['order_id'];
+                $flightTempData['paymentData']['discount_value'] = 0;
+                $flightTempData['paymentData']['type'] = "razor_pay";
+                $flightTempData['paymentData']['razor_pay_response'] = json_encode($responseData);
+                $flightTempData['paymentData']['trans_date'] = date("d/m/Y H:m:i");
+                $this->Flight_Model->addFlightPayment($flightTempData['paymentData']);
+                $this->session->unset_userdata('flightTransactionData');
+                $this->session->set_flashdata('flash_error','Your flight booking transaction got failed. Please try again.');
+                $response['status'] = 'error';
+                $response['route'] = '/flight/payment_error/';	
+				//return redirect ( '/flight/payment_error/' );
+			}
+        }
+        echo json_encode($response);
+    }
+
+	public function paymentSuccess($bookingId){
+		$data ['booking_id'] = $bookingId;
+		return $this->load->view ( 'flight/after_payment_loading', $data );
+	}
 
 }
 ?>

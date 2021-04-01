@@ -41,7 +41,7 @@
 							<label class="col-sm-2 control-label"><?php echo $this->lang->line ( "visa" );?>  <?php echo $this->lang->line ( "title" );?> </label>
 							<div class="col-sm-9">
 								<div class="input text">
-										<?php echo form_input(array('name'=>'visa_title','class'=>'form-control'),set_value('visa_title'));?>
+								<?php echo form_input(array('name'=>'visa_title','maxlength'=>200,'class'=>'form-control'),set_value('visa_title'));?>
 										<?php echo form_error('visa_title', '<div class="error">', '</div>');?>
 								</div>
 							</div>
@@ -50,7 +50,7 @@
 							<label class="col-sm-2 control-label"><?php echo $this->lang->line ( "visa" );?>  <?php echo $this->lang->line ( "amount" );?> </label>
 							<div class="col-sm-9">
 								<div class="input text">
-									<?php echo form_input(array('name'=>'visa_amount','class'=>'form-control'),set_value('visa_amount'));?>
+								<?php echo form_input(array('name'=>'visa_amount',"onkeypress"=>"return onlyNumberKey(event)",'class'=>'form-control'),set_value('visa_amount'));?>
 										<?php echo form_error('visa_amount', '<div class="error">', '</div>');?>
 								</div>
 							</div>
@@ -59,7 +59,7 @@
 							<label class="col-sm-2 control-label"><?php echo $this->lang->line ( "visa" );?>  Duration </label>
 							<div class="col-sm-9">
 								<div class="input text">
-									<?php echo form_input(array('name'=>'visa_duration','class'=>'form-control'),set_value('visa_duration'));?>
+								<?php echo form_input(array('name'=>'visa_duration',"onkeypress"=>"return onlyNumberKey(event)",'class'=>'form-control'),set_value('visa_duration'));?>
 										<?php echo form_error('visa_duration', '<div class="error">', '</div>');?>
 								</div>
 							</div>
@@ -104,6 +104,15 @@
 		<!-- /row -->
 	</div>
 </section>
+<script>
+	function onlyNumberKey(evt) {   
+        // Only ASCII charactar in that range allowed
+        var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
+    }
+</script>
 <!--/ CONTENT -->
 <?php $this->load->view("simple_layout/footer");?>
 <?php $this->load->view("blog/js");?>

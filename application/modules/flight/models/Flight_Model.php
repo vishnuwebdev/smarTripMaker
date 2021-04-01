@@ -3,7 +3,60 @@ class Flight_Model extends CI_Model {
 	public function __construct() {
 		parent::__construct ();
 	}
-        
+
+	function getRefundData($bookingId, $userId){
+		$this->db->select("*");
+		$this->db->from('stm_wallet_history');
+		$this->db->where('order_id',$bookingId);
+		$this->db->where('customer_id',$userId);
+		$this->db->where('actionType IS NULL', null, false);
+		$query = $this->db->get();
+		return ($query->num_rows() == '') ? null : $query->row();
+	}
+
+	function getPaymentGatewayData($bookingId){
+		$this->db->select("*");
+		$this->db->from('flight_payment_history');
+		$this->db->where('booking_id',$bookingId);
+		$this->db->where('order_status',"Success");
+		$this->db->where('actionType IS NULL', null, false);
+		$query = $this->db->get();
+		return ($query->num_rows() == '') ? null : $query->row();
+	}
+
+
+	function refundUserBal($user_id,$RefundedBal){
+		$this->db->where('cust_id', $user_id);
+		$this->db->update('customer', ['cust_balance'=>$RefundedBal]); 
+	}
+
+	function setWalletHistoryRefunded($bookingId,$user_id){
+		$this->db->where('order_id',$bookingId);
+		$this->db->where('customer_id',$user_id);
+		$this->db->where('actionType IS NULL', null, false);
+		$this->db->update('stm_wallet_history', ['actionType'=>'ReFund']); 
+	}
+
+	function updatePaymentGatewayRefund($bookingId,$data){
+		$this->db->where('booking_id',$bookingId);
+		$this->db->where('order_status',"Success");
+		$this->db->where('actionType IS NULL', null, false);
+		$this->db->update('flight_payment_history', ['actionType'=>'ReFund','action_data'=>$data]); 
+	}
+
+
+	function getUserInfo( $userId){
+		$this->db->select("*");
+		$this->db->from('customer');
+		$this->db->where('cust_id',$userId);
+		$query = $this->db->get();
+		if($query->num_rows() ==''){
+			return null;
+		}else{
+			return $query->row();
+		}
+	}
+    
 	function get_dsa_markup($id,$bp_dom_int){
 		$this->db->select ( "*" );
 		$this->db->from ( 'dsa_markup' );
@@ -95,12 +148,7 @@ class Flight_Model extends CI_Model {
 			return "0";
 		}
 	}
-
-
-
-
-
-		  
+	  
          function get_countries(){
 			
 			$this->db->select("*");
@@ -126,54 +174,29 @@ class Flight_Model extends CI_Model {
 				return $query->row();
 			}
 		}
-                
-                
+                   
 		function get_booking_by_id($id,$fld="*"){		
-
 			$this->db->select($fld);
-
 			$this->db->from('flight_booking_list');
-
 			$this->db->where('fbook_id',$id);
-
 			$query=$this->db->get();
-
 			if($query->num_rows() ==''){
-
 				return '';
-
 			}else{
-
 				return $query->row();
-
 			}
-
 		}
                 
         function get_pax_by_id($id){
-
-		
-
 		$this->db->select('*');
-
 			$this->db->from('flight_pax_list');
-
 			$this->db->where('fpax_booking_id',$id);
-
 			$query=$this->db->get();
-
 			if($query->num_rows() ==''){
-
 				return '';
-
 			}else{
-
 				return $query->result();
-
 			}
-
-		
-
 		}
 
 		function get_coupon_data($select,$where,$table){
@@ -279,5 +302,48 @@ class Flight_Model extends CI_Model {
 			// }
 		// }
 	
+		public function getFlightTransaction($bookingId){
+			$this->db->select("*");
+			$this->db->where('booking_id', $bookingId);
+			$query = $this->db->get('flight_payment_history');
+			if($query->num_rows() > 0){
+				return $query->row();
+			}else{
+				return false;
+			}
+		}
+	
+		public function addInitialTransaction($data){
+			$this->db->insert('flight_payment_history', $data);
+			return $this->db->insert_id();
+		}
+		
+		public function updatePaymentTransaction($data){
+			$transactionData = $this->getFlightTransaction($data['booking_id']);
+			$this->db->where('id', $transactionData->id);
+			$this->db->update('flight_payment_history', $data);
+			return $transactionData->id;
+		}
+	
+		public function addFlightPayment($data){
+			$transactionData = $this->getFlightTransaction($data['order_id']);
+			$formData = array (
+				"booking_id" => $data['order_id'],
+				"type" => isset($data['type']) ? $data['type'] : "cc_avenue",
+				"order_id" => $data['order_id'],
+				"tracking_id" => $data['tracking_id'],
+				"order_status" => $data['order_status'],
+				"amount" => $data['amount'],
+				"discount_value" => $data['discount_value'],
+				"trans_date" => $data['trans_date'],
+				"payment_data" => json_encode($data),
+			);
+			if($transactionData){
+				$lastId = $this->updatePaymentTransaction($formData);
+			}else{
+				$lastId = $this->addInitialTransaction($formData);
+			}
+			return $this->db->insert_id();
+		}
 }
 ?>

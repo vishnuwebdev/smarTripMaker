@@ -392,7 +392,7 @@ function dsa_menu() {
 		),
 		array (
 			"menu_module_name" => "b2c_visa",
-			"menu_title" => "Visa Management",
+			"menu_title" => "Visa Request",
 			"menu_icon" => "fa-cc-visa",
 			"menu_active_class" => "b2c_visa",
 			"sub_menu_display_class" => "b2c_visa",
@@ -404,6 +404,29 @@ function dsa_menu() {
 					"sub_menu_active_class" => "b2c_visa/request_list",
 					"sub_menu_icon" => "fa-list"
 				),
+				// array (
+				// 	"sub_menu_name" => "visa/visa_list",
+				// 	"sub_menu_title" => "Visa Types",
+				// 	"sub_menu_link" => "visa/visa_list",
+				// 	"sub_menu_active_class" => "visa/visa_list",
+				// 	"sub_menu_icon" => "fa-list"
+				// ),
+				// array (
+				// 	"sub_menu_name" => "visa/visa_location",
+				// 	"sub_menu_title" => "Visa Location",
+				// 	"sub_menu_link" => "visa/visa_location",
+				// 	"sub_menu_active_class" => "visa/visa_location",
+				// 	"sub_menu_icon" => "fa-list"
+				// ),
+			)
+		),
+		array (
+			"menu_module_name" => "visa",
+			"menu_title" => "Visa Management",
+			"menu_icon" => "fa-cc-visa",
+			"menu_active_class" => "visa",
+			"sub_menu_display_class" => "visa",
+			"sub_menu" => array (
 				array (
 					"sub_menu_name" => "visa/visa_list",
 					"sub_menu_title" => "Visa Types",

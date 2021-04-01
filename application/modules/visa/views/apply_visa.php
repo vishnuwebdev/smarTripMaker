@@ -2,11 +2,15 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
 <?php $this->load->view('include/header');
 	$visaDuration = 0;
+	$currency = getCurrentCurrency();
 ?>
 <style>
-.ui-datepicker-trigger {
-    display: none !important;
-}
+	.ui-datepicker-trigger {
+		display: none !important;
+	}
+	select.error {
+		color: #6c757d !important;
+	}
 </style>
 <div class="main-field pt-2 pb-2 pt-md-4 pb-md-4">
 <div class="container">
@@ -308,6 +312,10 @@
 		});
 	});
 	
+	$(".js--image-preview").on("click",function(e){
+		$(this).next().find("input").trigger("click");
+	});
+
 	function book_registration() {	
 		var cFname = $("#Cust_f_name").val();
 		var cLname = $("#Cust_l_name").val();
@@ -382,7 +390,6 @@
 		var termsEl = $("#term_accept");
 		if($(termsEl).is(":checked")){
 			$("#term_accept").parent("label").css("color","black");
-			
 		}else{
 			e.preventDefault();
 			$("#term_accept").parent("label").css("color","red");
@@ -395,7 +402,8 @@
 		uploadField.addEventListener('change', getFile);
 		function getFile(e){
 			let file = e.currentTarget.files[0];
-			checkType(file);
+			let target = e.currentTarget;
+			checkType(file,target);
 		}
 		function previewImage(file){
 			let thumb = box.querySelector('.js--image-preview'),
@@ -406,13 +414,14 @@
 			reader.readAsDataURL(file);
 			thumb.className += ' js--no-default';
 		}
-		function checkType(file){
+		function checkType(file, target){
 			let imageType = /image.*/;
 			if (!file.type.match(imageType)) {
 				throw 'Datei ist kein Bild';
 			} else if (!file){
 				throw 'Kein Bild gewählt';
 			} else {
+				$(target).next("label").html("");
 				previewImage(file);
 			}
 		}
@@ -463,6 +472,13 @@
 			e.stopPropagation();
 		}
 	}
+	$("#dateofBirth,#departure-date,#arrivalDate").on("change",function(){
+		var date = $(this).val();
+		if(date){
+			$(this).removeClass("error");
+			$(this).next("label").html("");
+		}
+	});
 	
 </script>
 
